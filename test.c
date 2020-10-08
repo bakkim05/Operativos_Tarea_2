@@ -10,7 +10,7 @@ int main()
     child = fork();
     if(child == 0) {
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-        execl("/bin/ls", "ls", NULL);
+        execl("./test", "test", NULL, (char *) 0);
     }
     else {
         wait(NULL);
