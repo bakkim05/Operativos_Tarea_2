@@ -1,9 +1,12 @@
+
+
 #include <sys/ptrace.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <sys/reg.h>
-#include <sys/syscall.h> 
+//#include <sys/user.h>
+#include <sys/syscall.h>
 
 int main()
 {   pid_t child;
@@ -14,7 +17,7 @@ int main()
     child = fork();
     if(child == 0) {
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-        execl("/bin/ls", "ls", NULL);
+        execl("./hello", "hello", NULL);
     }
     else {
        while(1) {
@@ -28,18 +31,10 @@ int main()
                 /* Syscall entry */
                 insyscall = 1;
                 params[0] = ptrace(PTRACE_PEEKUSER,
-                                   child, 8 * RBX,
+                                   child, 8 * ORIG_RAX,
                                    NULL);
-                params[1] = ptrace(PTRACE_PEEKUSER,
-                                   child, 8 * RCX,
-                                   NULL);
-                params[2] = ptrace(PTRACE_PEEKUSER,
-                                   child, 8 * RDX,
-                                   NULL);
-                printf("Write called with "
-                       "%ld, %ld, %ld\n",
-                       params[0], params[1],
-                       params[2]);
+                printf("System Call is: %ld\n",
+                       params[0]);
                 }
           else { /* Syscall exit */
                 eax = ptrace(PTRACE_PEEKUSER,
