@@ -52,8 +52,6 @@ void interactive(char* executable){
 
     char callBuffer[BUFFER_SIZE];
 
-    printf("executable: %s\n",executable);
-
     if(child == 0) {
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
         execl(executable, "interactive", NULL);
@@ -88,20 +86,11 @@ int main(int argc, char *argv[])
         if (i == argc-1){
             strcat(program, argv[i]);
             strcat(program,"\0");
-        }
-        else{
+        }else{
             strcat(program, argv[i]);
             strcat(program, " ");
         }
     }
-
-    // int i = 0;
-    // for (i=1; i< argc; i++) {
-    //     printf("\narg%d=%s", i, argv[i]);
-    // }
-    
-    // printf("\n");
-    // printf("%s",program);
     
     if (strcmp(argv[1],"interactivo") == 0)
     {
