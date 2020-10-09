@@ -11,7 +11,7 @@
 // returns -1 if not found and the index of the syscall if foind
 int already_found(long syscall_num, long *syscalls_found, int found_len);
 int getSyscallName(int sys_number, char *name);
-void print_auto_results();
+void print_auto_results(long *syscalls, int *syscall_count, int len);
 
 int main()
 {
@@ -76,6 +76,7 @@ int main()
                    child, NULL, NULL);
         }
     }
+
     return 0;
 }
 
