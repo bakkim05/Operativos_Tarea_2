@@ -6,6 +6,7 @@
 #include <sys/syscall.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define BUFFER_SIZE 200
 #define PROGRAM_SIZE 100
@@ -27,7 +28,7 @@ int createCall(long syscallNumber, char* buffer){
 int getSyscallName(long syscallNumber, char*buffer){
 
     char temp_buffer[BUFFER_SIZE];
-    createCall(syscallNumber,&temp_buffer);
+    createCall(syscallNumber,temp_buffer);
     system(temp_buffer);
 
     FILE * temp_txt;
@@ -43,69 +44,65 @@ int getSyscallName(long syscallNumber, char*buffer){
 }
 
 void interactive(char* executable){
-    pid_t child;
-    long orig_eax, eax;
-    long params[0];
-    int status;
-    int insyscall = 0;
-    child = fork();
-
-    char callBuffer[BUFFER_SIZE];
-
-    printf("executable: %s\n",executable);
-
-    if(child == 0) {
-        ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-        execl(executable, "interactive", NULL);
-    }
-    else {
-        while(1) {
-            wait(&status);
-            if(WIFEXITED(status))
-                break;
-            orig_eax = ptrace(PTRACE_PEEKUSER, child, 8 * ORIG_RAX, NULL);
-            if(insyscall == 0) {
-                /* Syscall entry */
-                insyscall = 1;
-                params[0] = ptrace(PTRACE_PEEKUSER, child, 8 * ORIG_RAX, NULL);
-                getSyscallName(params[0],&callBuffer);
-                printf("Syscall made: %s", callBuffer);
-            }
-            else { /* Syscall exit */
-                insyscall = 0;
-            }
-            ptrace(PTRACE_SYSCALL, child, NULL, NULL);
-
-        }
-    }
+    return;
 }
 
 int main(int argc, char *argv[])
 {   
     char program[PROGRAM_SIZE];
+    memset(program,0,PROGRAM_SIZE);
     for (int i = 2; i < argc ; i++){
-        strcat(program, argv[i]);
-        strcat(program, " ");
+        if (i == argc-1){
+            strcat(program, argv[i]);
+            strcat(program,"\0");
+        }else{
+            strcat(program, argv[i]);
+            strcat(program, " ");
+        }
     }
-
-    // int i = 0;
-    // for (i=1; i< argc; i++) {
-    //     printf("\narg%d=%s", i, argv[i]);
-    // }
-    
-    // printf("\n");
-    // printf("%s",program);
     
     if (strcmp(argv[1],"interactivo") == 0)
     {
         printf("[MODO INTERACTIVO]\n");
-        interactive(program);
+        pid_t child;
+        long orig_eax, eax;
+        long params[0];
+        int status;
+        int insyscall = 0;
+        child = fork();
+
+        char callBuffer[BUFFER_SIZE];
+
+        if(child == 0) {
+            ptrace(PTRACE_TRACEME, 0, NULL, NULL);
+            execv(argv[2], &argv[3]);
+        }
+        else {
+            while(1) {
+                wait(&status);
+                if(WIFEXITED(status))
+                    break;
+                orig_eax = ptrace(PTRACE_PEEKUSER, child, 8 * ORIG_RAX, NULL);
+                if(insyscall == 0) {
+                    /* Syscall entry */
+                    insyscall = 1;
+                    params[0] = ptrace(PTRACE_PEEKUSER, child, 8 * ORIG_RAX, NULL);
+                    getSyscallName(params[0],callBuffer);
+                    printf("Syscall made: %s", callBuffer);
+                }
+                else { /* Syscall exit */
+                    insyscall = 0;
+                }
+                ptrace(PTRACE_SYSCALL, child, NULL, NULL);
+
+            }
+        }
     }
     
     else if (strcmp(argv[1],"automatico") == 0)
     {
         printf("[MODO AUTOMATICO]\n");
-        interactive(program);
+        //interactive(program);
     }
     else
     {
