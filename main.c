@@ -83,9 +83,16 @@ void interactive(char* executable){
 int main(int argc, char *argv[])
 {   
     char program[PROGRAM_SIZE];
+    memset(program,0,PROGRAM_SIZE);
     for (int i = 2; i < argc ; i++){
-        strcat(program, argv[i]);
-        strcat(program, " ");
+        if (i == argc-1){
+            strcat(program, argv[i]);
+            strcat(program,"\0");
+        }
+        else{
+            strcat(program, argv[i]);
+            strcat(program, " ");
+        }
     }
 
     // int i = 0;
