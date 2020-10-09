@@ -4,7 +4,7 @@ compile:
 	gcc -o main main.c && clear
 
 run:
-	./main
+	./main interactivo ./hello
 
 hello:
 	gcc -o hello hello.c && clear

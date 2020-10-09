@@ -52,6 +52,8 @@ void interactive(char* executable){
 
     char callBuffer[BUFFER_SIZE];
 
+    printf("executable: %s\n",executable);
+
     if(child == 0) {
         ptrace(PTRACE_TRACEME, 0, NULL, NULL);
         execl(executable, "interactive", NULL);
@@ -80,25 +82,35 @@ void interactive(char* executable){
 
 int main(int argc, char *argv[])
 {   
-    // char program[PROGRAM_SIZE];
-    // for (int i = 2; i < argc ; i++){
-    //     strcat(program, argv[i]);
-    //     //strcat(program, " ");
-    // }
-    int i = 0;
-    for (i=1; i< argc; i++) {
-        printf("\narg%d=%s", i, argv[i]);
+    char program[PROGRAM_SIZE];
+    for (int i = 2; i < argc ; i++){
+        strcat(program, argv[i]);
+        strcat(program, " ");
     }
-    printf("\n");
-    //printf("%s",program);
-    
-    // if (strcmp(argv[1],"interactivo") == 0)
-    // {
-    //     interactive(program);
+
+    // int i = 0;
+    // for (i=1; i< argc; i++) {
+    //     printf("\narg%d=%s", i, argv[i]);
     // }
-
-    //interactive("program");
-
+    
+    // printf("\n");
+    // printf("%s",program);
+    
+    if (strcmp(argv[1],"interactivo") == 0)
+    {
+        printf("[MODO INTERACTIVO]\n");
+        interactive(program);
+    }
+    
+    else if (strcmp(argv[1],"automatico") == 0)
+    {
+        printf("[MODO AUTOMATICO]\n");
+        interactive(program);
+    }
+    else
+    {
+        printf("El modo seleccionado no existe\n");
+    }
     
 
     return 0;
