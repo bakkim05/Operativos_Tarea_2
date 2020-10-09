@@ -1,10 +1,10 @@
 all: compile run
 
 compile:
-	gcc -o interactive interactive.c && clear
+	gcc -o main main.c && clear
 
 run:
-	./test
+	./main
 
 hello:
 	gcc -o hello hello.c && clear
