@@ -1,10 +1,12 @@
-all: compile run
+all: compile run-interactive
 
 compile:
 	gcc -o main main.c && clear
 
-run:
-	./main interactivo ./hello
+run-interactive: compile
+	./main interactivo /bin/ls -a
 
-hello:
-	gcc -o hello hello.c && clear
+run-automatic: compile
+	./main automatico /bin/ls -a
+clean:
+	rm main temp.txt
